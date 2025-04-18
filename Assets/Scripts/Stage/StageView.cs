@@ -30,7 +30,7 @@ public class StageView : MonoBehaviour, IEnhancedScrollerDelegate
 
     public int GetNumberOfCells(EnhancedScroller scroller)
     {
-        return gameModel.NumberOfStages / StageRowView.NUMBER_OF_STAGES_PER_ROW;
+        return gameModel.NumberOfStages / StageRowView.NUMBER_OF_STAGES_PER_ROW + 1;
     }
 
     public float GetCellViewSize(EnhancedScroller scroller, int dataIndex)
