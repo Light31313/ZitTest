@@ -15,7 +15,11 @@ public class StageItemView : MonoBehaviour
 
     private void Start()
     {
-        btnSelectLevel.onClick.AddListener(() => gameModel.OpenStage(_item.Stage));
+        btnSelectLevel.onClick.AddListener(() =>
+        {
+            if (!_item.IsUnlocked) return;
+            gameModel.OpenStage(_item.Stage);
+        });
     }
 
     public void Init(StageSaveData item)
@@ -41,7 +45,7 @@ public class StageItemView : MonoBehaviour
         }
 
         imgLocked.gameObject.SetActive(!item.IsUnlocked);
-        imgLevelTransitionHoz.gameObject.SetActive(item.Stage == 1 || item.Stage % 8 == 0 || item.Stage % 9 == 0);
-        imgLevelTransitionVer.gameObject.SetActive(item.Stage % 4 == 0 || item.Stage % 8 == 0);
+        imgLevelTransitionHoz.gameObject.SetActive(item.Stage % 8 is 1 or 0);
+        imgLevelTransitionVer.gameObject.SetActive(item.Stage % 4 == 0);
     }
 }

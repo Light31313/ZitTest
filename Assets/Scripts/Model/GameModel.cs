@@ -10,10 +10,8 @@ public class GameModel : ScriptableObject
     [SerializeField] private MazeData mazeData;
     private List<StageSaveData> _stages;
     public IReadOnlyList<StageSaveData> Stages => _stages;
-    private PlayerSaveData _player;
     public int TotalStars { get; private set; } = 0;
     public event Action OnLoadStageDone;
-    public event Action<PlayerSaveData> OnLoadPlayerDone;
     public event Action OnReachNewStage;
     public int NumberOfStages => _stages.Count;
     public int CurrentStage { get; private set; }
@@ -21,14 +19,6 @@ public class GameModel : ScriptableObject
     public void LoadGameData()
     {
         LoadStage();
-        LoadPlayer();
-
-        void LoadPlayer()
-        {
-            _player = new PlayerSaveData();
-            _player.Load();
-            OnLoadPlayerDone?.Invoke(_player);
-        }
 
         void LoadStage()
         {
@@ -48,6 +38,7 @@ public class GameModel : ScriptableObject
                 }
 
                 LocalStorageUtils.HasInitStages = true;
+                Debug.Log("Init Stages");
             }
 
             UpdateStages();
@@ -68,6 +59,10 @@ public class GameModel : ScriptableObject
     public void ReachNextStage()
     {
         CurrentStage++;
+        if (CurrentStage > mazeData.NumberOfMazes) CurrentStage = 1;
+        var saveData = _stages[CurrentStage - 1];
+        saveData.IsUnlocked = true;
+        saveData.Save();
         OnReachNewStage?.Invoke();
     }
 
@@ -87,11 +82,6 @@ public class GameModel : ScriptableObject
         }
 
         OnLoadStageDone?.Invoke();
-    }
-
-    public void SavePlayerData()
-    {
-        _player.Save();
     }
 
     public void ResetStages()
@@ -119,7 +109,6 @@ public class GameModel : ScriptableObject
     private void OnDisable()
     {
         _stages = null;
-        _player = null;
         CurrentStage = 0;
     }
 }

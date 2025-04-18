@@ -15,6 +15,7 @@ public class StageView : MonoBehaviour, IEnhancedScrollerDelegate
     private void OnEnable()
     {
         gameModel.OnLoadStageDone += ShowStages;
+        ShowStages();
     }
 
     private void OnDisable()

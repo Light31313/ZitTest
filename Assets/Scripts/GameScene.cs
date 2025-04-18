@@ -8,10 +8,6 @@ public class GameScene : UIScene
     private void Start()
     {
         gameModel.LoadGameData();
-    }
-
-    private void OnApplicationQuit()
-    {
-        gameModel.SavePlayerData();
+        Application.targetFrameRate = 60;
     }
 }

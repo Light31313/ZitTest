@@ -4,16 +4,10 @@ using UnityEngine;
 
 public static class LocalStorageUtils
 {
-    public static PlayerSaveData PlayerSaveData
-    {
-        get => GetObject<PlayerSaveData>(LocalStorageEnum.PlayerData.ToString());
-        set => SetObject(LocalStorageEnum.PlayerData.ToString(), value);
-    }
-
     public static bool HasInitStages
     {
         get => GetBoolean(LocalStorageEnum.InitStages.ToString());
-        set => SetObject(LocalStorageEnum.InitStages.ToString(), value);
+        set => SetBoolean(LocalStorageEnum.InitStages.ToString(), value);
     }
 
     public static void SaveStage(StageSaveData data)
@@ -114,7 +108,6 @@ public static class LocalStorageUtils
 
 public enum LocalStorageEnum
 {
-    PlayerData,
     StageData,
     InitStages
 }

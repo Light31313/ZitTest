@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -13,8 +12,9 @@ public class MazeGenerator : MonoBehaviour
     public IReadOnlyDictionary<Vector2Int, MazeCellView> CellViewsDictionary => _cellViewsDictionary;
     private Transform _cacheTransform;
     private Dictionary<Vector2Int, bool> _currentGrid;
-    private List<Line> _guidingLines = new();
-    private List<Vector2> _pathPoints = new();
+    private readonly List<Line> _guidingLines = new();
+    private readonly List<Vector2> _pathPoints = new();
+    public IReadOnlyList<Vector2> PathPoints => _pathPoints;
 
     private void Awake()
     {
@@ -39,6 +39,7 @@ public class MazeGenerator : MonoBehaviour
                 var pos = new Vector2Int(j, i);
                 var mazeItem = CurrentMazeItem.MazeDictionary[pos];
                 var cellView = Pool.Get(cellViewPrefab, _cacheTransform);
+                cellView.transform.SetAsLastSibling();
                 cellView.Init(mazeItem);
                 _cellViewsDictionary.Add(pos, cellView);
             }
@@ -69,29 +70,40 @@ public class MazeGenerator : MonoBehaviour
 
     public void FindPath(Vector2Int startCell, Vector2Int endCell)
     {
+        _pathPoints.Clear();
         var path = AStarPathfinding.FindPath(_currentGrid,
             new Node(CellToGridPos(startCell), 0, 0, null),
             new Node(CellToGridPos(endCell), 0, 0, null));
         if (path.Count == 0) return;
-        var startLinePos = new Vector2Int(path[0].x, path[0].y);
-        var endLinePos = Vector2Int.zero;
-        for (var i = 1; i < path.Count; i++)
+        var currentPos = new Vector2Int(path[0].x, path[0].y);
+        _pathPoints.Add(GridPosToAnchoredPos(currentPos));
+        for (var i = 1; i < path.Count - 1; i++)
         {
-            var node = path[i];
-            var nodePos = new Vector2Int(node.x, node.y);
-            if (startLinePos.x == nodePos.x || startLinePos.y == nodePos.y)
+            var nodePos = new Vector2Int(path[i].x, path[i].y);
+            var nextNodePos = new Vector2Int(path[i + 1].x, path[i + 1].y);
+            if (i == path.Count - 2)
             {
-                endLinePos = nodePos;
+                _pathPoints.Add(GridPosToAnchoredPos(nextNodePos));
+                break;
             }
 
-            if ((startLinePos.x != nodePos.x && startLinePos.y != nodePos.y) || i == path.Count - 1)
-            {
-                var line = Pool.Get(linePrefab, transform.parent);
-                line.InitLine(GridPosToCellPos(startLinePos),
-                    GridPosToCellPos(endLinePos));
-                startLinePos = endLinePos;
-                endLinePos = nodePos;
-            }
+            if (currentPos.x == nextNodePos.x || currentPos.y == nextNodePos.y) continue;
+            currentPos = nodePos;
+            _pathPoints.Add(GridPosToAnchoredPos(currentPos));
+        }
+    }
+
+    public void DrawLines()
+    {
+        ClearLine();
+        for (var i = 0; i < _pathPoints.Count - 1; i++)
+        {
+            var startPoint = _pathPoints[i];
+            var endPoint = _pathPoints[i + 1];
+
+            var line = Pool.Get(linePrefab, transform.parent);
+            line.InitLine(startPoint, endPoint);
+            _guidingLines.Add(line);
         }
     }
 
@@ -112,14 +124,20 @@ public class MazeGenerator : MonoBehaviour
         return grid;
     }
 
-    public Vector2Int CellToGridPos(Vector2Int cellPos)
+    private Vector2Int CellToGridPos(Vector2Int cellPos)
     {
         return new Vector2Int(cellPos.x * 2 + 1, cellPos.y * 2 + 1);
     }
 
-    private Vector2 GridPosToCellPos(Vector2Int gridPos)
+    public Vector2 GridPosToAnchoredPos(Vector2Int gridPos)
     {
         return ((RectTransform)_cellViewsDictionary[new Vector2Int((gridPos.x - 1) / 2, (gridPos.y - 1) / 2)].transform)
+            .anchoredPosition;
+    }
+
+    public Vector2 CellPosToAnchoredPos(Vector2Int cellPos)
+    {
+        return ((RectTransform)_cellViewsDictionary[cellPos].transform)
             .anchoredPosition;
     }
 }

@@ -3,12 +3,12 @@ using UnityEngine;
 public class MazeCellView : MonoBehaviour
 {
     [SerializeField] private GameObject leftWall, rightWall, upWall, downWall;
-    private MazeCellItemData _data;
+    public MazeCellItemData Data { get; private set; }
 
 
     public void Init(MazeCellItemData data)
     {
-        _data = data;
+        Data = data;
         leftWall.gameObject.SetActive(data.HasLeftWall);
         rightWall.gameObject.SetActive(data.HasRightWall);
         upWall.gameObject.SetActive(data.HasUpWall);

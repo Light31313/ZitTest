@@ -13,17 +13,20 @@ public class InGameScreen : UIScreen
     private void Start()
     {
         btnMenu.onClick.AddListener(gameModel.BackToStages);
-        btnShowPath.onClick.AddListener(() => { });
-        btnAutoMove.onClick.AddListener(() => { });
+        btnShowPath.onClick.AddListener(gamePlayController.GeneratePath);
+        btnAutoMove.onClick.AddListener(gamePlayController.MoveToDestination);
     }
 
     protected override void OnEnable()
     {
         base.OnEnable();
+        UpdateStage();
+        gameModel.OnReachNewStage += UpdateStage;
     }
 
     private void OnDisable()
     {
+        gameModel.OnReachNewStage -= UpdateStage;
     }
 
     private void UpdateStage()
