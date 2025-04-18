@@ -103,6 +103,7 @@ public class GamePlayController : MonoBehaviour
         IEnumerator IEWaitInit()
         {
             yield return null;
+            if (_playerMoveCoroutine != null) StopCoroutine(_playerMoveCoroutine);
             player.CurrentCell = playerSpawnCell;
             player.SetPosition(mazeGenerator.CellPosToAnchoredPos(playerSpawnCell));
             var randomDesCell = GetRandomDestinationCell();
