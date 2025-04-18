@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 public static class AStarPathfinding
@@ -7,7 +8,7 @@ public static class AStarPathfinding
     private static readonly List<Vector2Int> Directions = new List<Vector2Int>()
         { new(0, 1), new(1, 0), new(-1, 0), new(0, -1) };
 
-    public static List<Node> FindPath(Dictionary<Vector2Int, bool> grid, Node start, Node goal)
+    public static List<Node> FindPath(IReadOnlyList<Vector2Int> grid, Node start, Node goal)
     {
         var openSet = new List<Node> { start };
         var closedSet = new HashSet<(int, int)>();
@@ -26,7 +27,7 @@ public static class AStarPathfinding
                 var newX = current.x + dir.x;
                 var newY = current.y + dir.y;
                 var key = new Vector2Int(newX, newY);
-                if (!grid.ContainsKey(key) || !grid[new Vector2Int(newX, newY)]) continue; // Skip obstacles
+                if (!grid.Contains(key)) continue; // Skip obstacles
 
                 if (closedSet.Contains((newX, newY))) continue;
 

@@ -11,7 +11,7 @@ public class MazeGenerator : MonoBehaviour
     private readonly Dictionary<Vector2Int, MazeCellView> _cellViewsDictionary = new();
     public IReadOnlyDictionary<Vector2Int, MazeCellView> CellViewsDictionary => _cellViewsDictionary;
     private Transform _cacheTransform;
-    private Dictionary<Vector2Int, bool> _currentGrid;
+    private List<Vector2Int> _currentGrid;
     private readonly List<Line> _guidingLines = new();
     private readonly List<Vector2> _pathPoints = new();
     public IReadOnlyList<Vector2> PathPoints => _pathPoints;
@@ -108,17 +108,17 @@ public class MazeGenerator : MonoBehaviour
     }
 
     // Generate Grid for A* PathFinding
-    private Dictionary<Vector2Int, bool> GetGridOfCurrentStage()
+    private List<Vector2Int> GetGridOfCurrentStage()
     {
-        var grid = new Dictionary<Vector2Int, bool>();
+        var grid = new List<Vector2Int>();
         foreach (var item in CurrentMazeItem.CellItems)
         {
             var basePos = CellToGridPos(item.Position);
-            grid[basePos] = true;
-            grid[basePos + Vector2Int.left] = !item.HasLeftWall;
-            grid[basePos + Vector2Int.right] = !item.HasRightWall;
-            grid[basePos + Vector2Int.up] = !item.HasUpWall;
-            grid[basePos + Vector2Int.down] = !item.HasDownWall;
+            grid.Add(basePos);
+            if (!item.HasLeftWall) grid.Add(basePos + Vector2Int.left);
+            if (!item.HasRightWall) grid.Add(basePos + Vector2Int.right);
+            if (!item.HasUpWall) grid.Add(basePos + Vector2Int.up);
+            if (!item.HasDownWall) grid.Add(basePos + Vector2Int.down);
         }
 
         return grid;
