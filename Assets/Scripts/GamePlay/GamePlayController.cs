@@ -92,7 +92,7 @@ public class GamePlayController : MonoBehaviour
     private void OnDisable()
     {
         gameModel.OnReachNewStage -= InitGamePlay;
-        if (_playerMoveCoroutine != null) StopCoroutine(_playerMoveCoroutine);
+        StopPlayerMoving();
     }
 
     private void InitGamePlay()
@@ -103,7 +103,7 @@ public class GamePlayController : MonoBehaviour
         IEnumerator IEWaitInit()
         {
             yield return null;
-            if (_playerMoveCoroutine != null) StopCoroutine(_playerMoveCoroutine);
+            StopPlayerMoving();
             player.CurrentCell = playerSpawnCell;
             player.SetPosition(mazeGenerator.CellPosToAnchoredPos(playerSpawnCell));
             var randomDesCell = GetRandomDestinationCell();
@@ -118,6 +118,13 @@ public class GamePlayController : MonoBehaviour
         mazeGenerator.DrawLines();
     }
 
+    private void StopPlayerMoving()
+    {
+        if (_playerMoveCoroutine != null) StopCoroutine(_playerMoveCoroutine);
+        player.Stop();
+        player.IsMoving = false;
+    }
+    
     public void MoveToDestination()
     {
         if (player.IsMoving) return;

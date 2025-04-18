@@ -9,7 +9,7 @@ public class Player : MonoBehaviour
     [SerializeField] private float moveSpeed = 10f;
     [SerializeField] private RectTransform rectTrans;
     public Vector2Int CurrentCell { get; set; }
-    public bool IsMoving { get; private set; }
+    public bool IsMoving { get; set; }
 
     public IEnumerator IEMoveAlongPath(IReadOnlyList<Vector2> pathPoints, Action onComplete)
     {
@@ -51,5 +51,10 @@ public class Player : MonoBehaviour
     private void OnDisable()
     {
         IsMoving = false;
+    }
+
+    public void Stop()
+    {
+        rectTrans.DOKill();
     }
 }
