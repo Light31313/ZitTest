@@ -8,7 +8,7 @@ using Random = UnityEngine.Random;
 public class GameModel : ScriptableObject
 {
     [SerializeField] private MazeData mazeData;
-    private List<StageSaveData> _stages;
+    private List<StageSaveData> _stages = new();
     public IReadOnlyList<StageSaveData> Stages => _stages;
     public int TotalStars { get; private set; } = 0;
     public event Action OnLoadStageDone;
